@@ -109,3 +109,5 @@ EXPOSE 22
 EXPOSE 8888
 # expose port for tensorboard.
 EXPOSE 6666
+# epsose port for pycharm
+EXPOSE 2375

@@ -16,7 +16,7 @@ ENV LD_LIBRARY_PATH $HOME/.openmpi/lib:$LD_LIBRARY_PATH
 
 # install conda
 ENV PYTHON_VERSION=3.6
-RUN curl -o ~/miniconda.sh -O  https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh  && \
+RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     sh miniconda.sh -b -p $HOME/conda && \
     rm ~/miniconda.sh
 RUN $HOME/conda/bin/conda update -n base conda
@@ -27,16 +27,19 @@ RUN $HOME/conda/envs/pytorch-py$PYTHON_VERSION/bin/pip install pytelegraf pymong
 ENV PATH $HOME/conda/envs/pytorch-py$PYTHON_VERSION/bin:$PATH
 
 # install pytorch, torchvision, torchtext.
-RUN git clone --recursive  https://github.com/pytorch/pytorch
-RUN cd pytorch && \
-    git checkout tags/v1.3.0 && \
-    git submodule sync && \
-    git submodule update --init && \
-    TORCH_CUDA_ARCH_LIST="3.5 3.7 5.2 6.0 6.1 7.0+PTX" TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \
-    CMAKE_PREFIX_PATH="$(dirname $(which $HOME/conda/bin/conda))/../" \
-    pip install -v .
-RUN git clone https://github.com/pytorch/vision.git && cd vision && git checkout v0.4.0 && python setup.py install
-RUN $HOME/conda/envs/pytorch-py$PYTHON_VERSION/bin/pip install --upgrade git+https://github.com/pytorch/text
+#RUN git clone --recursive  https://github.com/pytorch/pytorch
+#RUN cd pytorch && \
+#    git checkout tags/v1.3.0 && \
+#    git submodule sync && \
+#    git submodule update --init && \
+#    TORCH_CUDA_ARCH_LIST="3.5 3.7 5.2 6.0 6.1 7.0+PTX" TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \
+#    CMAKE_PREFIX_PATH="$(dirname $(which $HOME/conda/bin/conda))/../" \
+#    pip install -v .
+#RUN git clone https://github.com/pytorch/vision.git && cd vision && git checkout v0.4.0 && python setup.py install
+#RUN sh -c '/bin/echo -e "y" | $HOME/conda/bin/conda install -n pytorch-py3.6 pytorch==1.3.0 torchvision==0.4.1 cudatoolkit=10.0 -c pytorch
+RUN $HOME/conda/bin/conda install -y -n pytorch-py3.6 pytorch==1.3.0 torchvision==0.4.1 cudatoolkit=10.0 -c pytorch
+#RUN $HOME/conda/envs/pytorch-py$PYTHON_VERSION/bin/pip install --upgrade git+https://github.com/pytorch/text
+RUN $HOME/conda/bin/conda install -y -n pytorch-py3.6 -c pytorch torchtext
 RUN $HOME/conda/envs/pytorch-py$PYTHON_VERSION/bin/pip install spacy
 RUN $HOME/conda/envs/pytorch-py$PYTHON_VERSION/bin/python -m spacy download en
 RUN $HOME/conda/envs/pytorch-py$PYTHON_VERSION/bin/python -m spacy download de
